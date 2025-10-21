@@ -1,0 +1,89 @@
+/* === Responsive úpravy pro mobily a iPhone === */
+@media only screen and (max-width: 640px) {
+    .hero h1 {
+        font-size: 20px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .title {
+        font-size: 22px;
+    }
+
+    .container {
+        min-width: auto;
+    }
+
+    .service-card {
+        max-width: 100%;
+        padding: 16px;
+    }
+
+    .pricing-header h1 {
+        font-size: 28px;
+    }
+
+    .pricing-header p {
+        font-size: 16px;
+    }
+
+    .home {
+        font-size: 28px;
+    }
+
+    .form-container {
+        padding: 16px;
+        margin: 20px 10px;
+    }
+
+    .calculator-inner {
+        padding: 0 10px;
+    }
+
+    .main-content.second-content {
+        padding: 20px;
+        margin: 20px 10px;
+    }
+
+    a.btn {
+        padding: 10px 20px;
+        font-size: 15px;
+    }
+
+    .contact-inner h2 {
+        font-size: 20px;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .services-grid {
+        gap: 24px;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    .pricing-table {
+        padding: 0 10px;
+    }
+
+    .calculator select,
+    .calculator input,
+    .calculator textarea {
+        font-size: 14px;
+    }
+
+    footer.contact {
+        padding: 30px 16px;
+    }
+
+    .reference-card {
+        font-size: 15px;
+    }
+}

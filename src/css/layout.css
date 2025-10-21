@@ -1,0 +1,380 @@
+/* --- container.css --- */
+/* Styles for Mobile devices */
+.container {
+    min-width: 320px;
+    max-width: 360px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.section {
+    padding: 40px 0;
+}
+
+/* Styles for Tablet devices */
+@media screen and (min-width: 768px) {
+    .container {
+        max-width: 768px;
+        padding: 0 32px;
+    }
+
+    .section {
+        padding: 62px 0;
+    }
+}
+
+/* Styles for Desktop devices */
+@media screen and (min-width: 1280px) {
+    .container {
+        max-width: 1280px;
+    }
+
+    .section {
+        padding: 82px 0;
+    }
+}
+/* --- hero.css --- */
+.hero {
+    background: #F3E8FF;
+    text-align: center;
+    padding: 64px 16px;
+}
+
+.hero h1 {
+    font-size: 40px;
+    margin-bottom: 16px;
+    color: #4C1D95;
+}
+
+.hero p {
+    color: #6B7280;
+    font-size: 18px;
+    margin-bottom: 32px;
+}
+
+.hero-buttons a {
+    padding: 12px 24px;
+    border-radius: 16px;
+    font-weight: bold;
+    margin: 0 8px;
+}
+
+.hero-buttons {
+    display: flex;
+}
+
+@media screen and (min-width: 768px) {
+    .hero-buttons {
+        display: block;
+    }
+}
+
+.btn-primary {
+    background: #8B5CF6;
+    color: white;
+}
+
+.btn-secondary {
+    background: #38BDF8;
+    color: #2d3748;
+}
+
+.home {
+    font-size: 40px;
+    margin-bottom: 16px;
+    color: #4C1D95;
+    margin-bottom: 20px;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.main-content {
+    margin: 60px auto 40px;
+    padding: 0 20px;
+    background-color: #fff;
+    padding: 40px;
+}
+
+.title {
+    font-size: 24px;
+    color: #2a145b;
+    margin-top: 40px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #2a145b;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+ul li {
+    padding-left: 0;
+    margin-bottom: 20px;
+}
+
+footer.contact {
+    background-color: #1a73e8;
+    color: #fff;
+    padding: 40px 20px;
+    margin-top: 60px;
+}
+
+.contact-inner h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.contact-info p {
+    margin: 8px 0;
+}
+
+.contact-info a {
+    color: #2a145b !important;
+    text-decoration: underline !important;
+}
+
+.contact-info a:hover {
+    color: #8B5CF6;
+    text-decoration: underline;
+}
+
+.footer-contact {
+    background-color: #f8f8f8;
+    padding: 40px 20px;
+    text-align: center;
+    border-top: 1px solid #ddd;
+}
+
+.footer-contact h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.footer-contact p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.contact-form label {
+    text-align: left;
+    font-size: 14px;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.contact-form button {
+    padding: 12px;
+    background-color: #34D399;
+    color: white;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.contact-form button:hover {
+    background-color: #139264;
+}
+
+.footer-nav,
+.footer-social {
+    margin-bottom: 15px;
+}
+
+.footer-nav a,
+.footer-social a {
+    margin: 0 10px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.footer-nav a:hover,
+.footer-social a:hover {
+    text-decoration: underline;
+}
+
+.footer-legal {
+    font-size: 12px;
+    color: #999;
+    margin-top: 20px;
+}
+
+.header {
+    background-color: #ffffff;
+    padding: 16px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+}
+
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo img {
+    height: auto;
+    max-height: 80px;
+    width: auto;
+}
+
+.nav {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+}
+
+.nav-list {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+}
+
+.nav-link {
+    display: block;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    padding: 12px 0;
+    color: #8B5CF6;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+    color: #2a145b;
+    transform: scale(1.05);
+}
+
+.contact-link {
+    display: block;
+    padding: 12px 24px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background-color: #34D399;
+    color: #ffffff;
+}
+
+.contact-link:hover,
+.contact-link:focus {
+    background-color: #139264;
+}
+
+.mobile-menu-icon svg {
+    display: none;
+    width: 24px;
+    height: 24px;
+}
+
+.burger-menu-btn {
+    background-color: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+}
+
+@media screen and (min-width: 768px) {
+    .burger-menu-btn {
+        display: none;
+    }
+}
+
+.burger-menu-btn-icon {
+    transition: all 0.3s ease;
+}
+
+.nav-link.active {
+    font-weight: bold;
+    color: #e63946;
+    border-bottom: 2px solid #e63946;
+}
+
+.menu-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* --- header.css --- */
+.header {
+    background-color: #ffffff;
+    padding: 16px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+}
+
+.header-nav {
+    display: none;
+}
+
+@media screen and (min-width: 768px) {
+    .header-nav {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        margin-left: auto;
+    }
+}
+
+.nav-link.active {
+    font-weight: bold;
+    color: #e63946;
+    border-bottom: 2px solid #e63946;
+}
+/* --- footer.css --- */
+.footer-contact {
+    background-color: #f8f8f8;
+    padding: 40px 20px;
+    text-align: center;
+    border-top: 1px solid #ddd;
+}
+
+.footer-contact h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.footer-contact p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.contact-form {
+    max-width: 500px;
+    margin: 0 auto 30px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.contact-form label {
+    text-align: left;
+    font-size: 14px;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

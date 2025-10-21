@@ -1,0 +1,312 @@
+
+/* --- services.css --- */
+.services {
+    background: white;
+    padding: 64px 16px;
+    text-align: center;
+}
+
+.title {
+    font-size: 30px;
+    color: #4C1D95;
+    margin-bottom: 20px;
+}
+
+.services-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    align-items: center;
+    text-align: center;
+}
+
+@media only screen and (min-width: 1280px) {
+    .services-grid {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+}
+
+.service-card {
+    min-width: 320px;
+    max-width: 360px;
+    background: #f9fafb;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.service-card img {
+    width: auto;
+    height: 192px;
+    object-fit: cover;
+    margin-bottom: 16px;
+}
+
+.service-card h3 {
+    color: #8B5CF6;
+    margin-bottom: 8px;
+}
+
+.service-card a {
+    color: #38BDF8;
+}
+/* --- calc.css --- */
+.calculator {
+    background: #ebf8ff;
+    padding: 64px 16px;
+    text-align: center;
+}
+
+.calculator-inner {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.calculator select,
+.calculator input,
+.calculator textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.result {
+    margin-top: 24px;
+    color: #8B5CF6;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.hidden {
+    display: none;
+}
+
+.form-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 24px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.form-input:focus {
+    border-color: #8B5CF6;
+    outline: none;
+}
+
+.price-result {
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 18px;
+    text-align: center;
+    color: #2a145b;
+}
+
+.hidden {
+    display: none;
+}
+/* --- cenik.css --- */
+.pricing {
+    background: #ffffff;
+    padding: 120px 16px 64px;
+    text-align: center;
+}
+
+.pricing-header h1 {
+    font-size: 40px;
+    color: #1a202c;
+    margin-bottom: 16px;
+}
+
+.pricing-header p {
+    font-size: 18px;
+    color: #4a5568;
+    max-width: 700px;
+    margin: 0 auto 40px;
+}
+
+.pricing-table {
+    max-width: 1000px;
+    margin: 0 auto;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+}
+
+th,
+td {
+    border: 1px solid #e2e8f0;
+    padding: 16px;
+    text-align: left;
+}
+
+th {
+    background-color: #f1f5f9;
+    color: #1a202c;
+    font-weight: bold;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+/* --- domacnost.css --- */
+.home {
+    font-size: 40px;
+    margin-bottom: 16px;
+    color: #4C1D95;
+    margin-bottom: 20px;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.main-content.second-content {
+    max-width: 1000px;
+    margin: 60px auto 40px;
+    padding: 0 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    padding: 40px;
+}
+
+a.btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 24px;
+    background-color: #34D399;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background-color 0.3s;
+}
+
+a.btn:hover {
+    background-color: #139264;
+}
+
+footer.contact {
+    background-color: #1a73e8;
+    color: #fff;
+    padding: 40px 20px;
+    margin-top: 60px;
+}
+
+.contact-inner h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.contact-info p {
+    margin: 8px 0;
+}
+
+.contact-info a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.contact-info a:hover {
+    text-decoration: none;
+}
+
+@media only screen and (max-width: 640px) {
+    .title {
+        font-size: 22px;
+    }
+
+    .service-card {
+        max-width: 100%;
+    }
+
+    .pricing-header h1 {
+        font-size: 28px;
+    }
+
+    .pricing-header p {
+        font-size: 16px;
+    }
+
+    .home {
+        font-size: 28px;
+    }
+
+    .form-container {
+        padding: 16px;
+    }
+
+    .main-content.second-content {
+        padding: 20px;
+    }
+
+    .calculator-inner {
+        padding: 0 10px;
+    }
+
+    a.btn {
+        padding: 10px 20px;
+        font-size: 15px;
+    }
+
+    .contact-inner h2 {
+        font-size: 20px;
+    }
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
