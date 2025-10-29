@@ -41,3 +41,6 @@ export const createSupabaseClient = () => {
 
 // Default client instance
 export const supabase = createSupabaseClient();
+
+// Export createClient for backward compatibility
+export { createClient } from '@supabase/supabase-js';

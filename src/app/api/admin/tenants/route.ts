@@ -3,6 +3,11 @@ import { isCleanStayEnabled } from '@/lib/env';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
+// Force dynamic rendering for API routes
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const runtime = 'nodejs';
+
 // Tenant creation schema
 const CreateTenantSchema = z.object({
   name: z.string().min(1).max(100),

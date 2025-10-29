@@ -3,18 +3,31 @@ import { isCleanStayEnabled } from '@/lib/env';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
+// Force dynamic rendering for API routes
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const runtime = 'nodejs';
+
 // Property creation schema
 const CreatePropertySchema = z.object({
   tenant_id: z.string().uuid(),
   name: z.string().min(1).max(100),
   address: z.string().min(1),
   type: z.enum(['apartment', 'house', 'office', 'hotel', 'other']),
+  client_id: z.string().uuid(),
   size_sqm: z.number().positive().optional(),
-  rooms: z.number().positive().optional(),
-  contact_phone: z.string().optional(),
-  contact_email: z.string().email().optional(),
+  layout: z.string().optional(),
+  bathrooms: z.number().positive().optional(),
   notes: z.string().optional(),
   settings: z.record(z.any()).optional(),
+  // Extended property fields
+  cleaning_instructions: z.string().optional(),
+  access_instructions: z.string().optional(),
+  equipment_on_site: z.string().optional(),
+  preferred_cleaning_times: z.string().optional(),
+  special_requirements: z.string().optional(),
+  cleaning_supplies: z.enum(['client', 'ours', 'partial']).optional(),
+  pets: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -27,7 +40,14 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const propertyData = CreatePropertySchema.parse(body);
+    
+    // Get tenant_id from header (set by middleware after login)
+    const tenantId = request.headers.get('x-tenant-id') || '550e8400-e29b-41d4-a716-446655440000';
+    
+    const propertyData = CreatePropertySchema.parse({
+      ...body,
+      tenant_id: tenantId
+    });
     
     const supabase = getSupabaseServerClient();
     

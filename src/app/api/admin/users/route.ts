@@ -3,6 +3,11 @@ import { isCleanStayEnabled } from '@/lib/env';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
+// Force dynamic rendering for API routes
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const runtime = 'nodejs';
+
 // User creation schema
 const CreateUserSchema = z.object({
   tenant_id: z.string().uuid(),
@@ -13,6 +18,24 @@ const CreateUserSchema = z.object({
   whatsapp_number: z.string().optional(),
   properties: z.array(z.string().uuid()).optional(),
   settings: z.record(z.any()).optional(),
+  
+  // Client-specific fields
+  billing_address: z.string().optional(),
+  ico: z.string().optional(),
+  dic: z.string().optional(),
+  notes: z.string().optional(),
+  payment_terms: z.string().optional(),
+  billing_frequency: z.enum(['after_cleaning', 'monthly', 'weekly', 'quarterly']).optional(),
+  
+  // Cleaner-specific fields
+  messenger: z.string().optional(),
+  document_number: z.string().optional(),
+  document_type: z.enum(['passport', 'id_card', 'driving_license', 'other']).optional(),
+  document_valid_until: z.string().optional(),
+  requested_hourly_rate_from: z.number().positive().optional(),
+  languages: z.array(z.string()).optional(),
+  availability: z.string().optional(),
+  specializations: z.array(z.string()).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -25,7 +48,17 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const userData = CreateUserSchema.parse(body);
+    console.log('User creation request body:', body);
+    
+    // Get tenant_id from header (set by middleware after login)
+    const tenantId = request.headers.get('x-tenant-id') || '550e8400-e29b-41d4-a716-446655440000';
+    console.log('Using tenant_id:', tenantId);
+    
+    const userData = CreateUserSchema.parse({
+      ...body,
+      tenant_id: tenantId
+    });
+    console.log('Parsed user data:', userData);
     
     const supabase = getSupabaseServerClient();
     
@@ -42,7 +75,7 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Failed to create user:', error);
       return NextResponse.json(
-        { error: 'Failed to create user' },
+        { error: 'Failed to create user', details: error.message },
         { status: 500 }
       );
     }

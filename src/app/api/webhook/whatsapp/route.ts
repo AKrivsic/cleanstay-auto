@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isCleanStayEnabled } from '@/lib/env';
-import { parseMessage } from '@/lib/ai/parseMessage';
+
+// Force dynamic rendering for API routes
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const runtime = 'nodejs';
+import { isCleanStayEnabled, getWABAConfig } from '@/lib/env';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import crypto from 'crypto';
+
+
 
 // WhatsApp webhook verification and message processing
 export async function GET(request: NextRequest) {
@@ -36,11 +43,12 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
-    // TODO: Verify webhook signature for security
-    // const signature = request.headers.get('x-hub-signature-256');
-    // if (!verifySignature(body, signature)) {
-    //   return NextResponse.json({ error: 'Invalid signature' }, { status: 403 });
-    // }
+    // Verify webhook signature for security
+    const signature = request.headers.get('x-hub-signature-256');
+    if (!verifySignature(body, signature)) {
+      console.warn('Invalid webhook signature');
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 403 });
+    }
 
     // Process WhatsApp messages
     if (body.object === 'whatsapp_business_account') {
@@ -53,7 +61,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ status: 'ok' });
+    return new NextResponse(null, { status: 204 });
     
   } catch (error) {
     console.error('WhatsApp webhook error:', error);
@@ -71,62 +79,137 @@ async function processMessages(value: any) {
   for (const message of value.messages || []) {
     const messageId = message.id;
     
-    // TODO: Check for idempotence using message_id
-    // const { data: existing } = await supabase
-    //   .from('messages')
-    //   .select('id')
-    //   .eq('whatsapp_message_id', messageId)
-    //   .single();
+    // Check for idempotence using message_id
+    const { data: existing } = await supabase
+      .from('messages')
+      .select('id')
+      .eq('id', messageId)
+      .single();
     
-    // if (existing) {
-    //   console.log('Message already processed:', messageId);
-    //   continue;
-    // }
+    if (existing) {
+      console.log('Message already processed:', messageId);
+      continue;
+    }
 
-    // Store raw message
+    // Extract message data safely
+    const messageData = {
+      id: messageId,
+      from_phone: message.from,
+      to_phone: message.to,
+      direction: 'in' as const,
+      timestamp: new Date(message.timestamp * 1000).toISOString(),
+      type: message.type,
+      payload_json: message,
+      tenant_id: null, // TODO: Implement tenant detection
+      status: 'received' as const
+    };
+
+    // Store raw message with idempotence
     const { error: storeError } = await supabase
       .from('messages')
-      .insert({
-        whatsapp_message_id: messageId,
-        from_number: message.from,
-        to_number: message.to,
-        message_type: message.type,
-        raw_data: message,
-        created_at: new Date().toISOString(),
-      });
+      .insert(messageData);
 
     if (storeError) {
       console.error('Failed to store message:', storeError);
       continue;
     }
 
-    // Process text messages with AI
-    if (message.type === 'text' && message.text?.body) {
-      try {
-        const parsed = await parseMessage(message.text.body, 'cs'); // Default to Czech
-        
-        // Store parsed result
-        await supabase
-          .from('message_parsing_results')
-          .insert({
-            message_id: messageId,
-            parsed_data: parsed,
-            confidence: parsed.confidence,
-            created_at: new Date().toISOString(),
-          });
+    // Update status to stored
+    await supabase
+      .from('messages')
+      .update({ status: 'stored' })
+      .eq('id', messageId);
 
-        // TODO: Trigger realtime updates or notifications based on parsed type
-        console.log('Message parsed:', parsed);
-        
-      } catch (error) {
-        console.error('AI parsing failed for message:', messageId, error);
-      }
+    // Log safe metadata (no tokens, no sensitive content)
+    console.log('Message stored:', {
+      id: messageId,
+      from: message.from,
+      type: message.type,
+      timestamp: messageData.timestamp
+    });
+
+    // Handle media messages - delegate to media worker
+    if (message.type === 'image' || message.type === 'document') {
+      await handleMediaMessage(messageId, message);
     }
   }
 }
 
-// TODO: Implement webhook signature verification
+// Verify webhook signature for security
 function verifySignature(body: any, signature: string | null): boolean {
-  // Implementation needed for production security
-  return true;
+  if (!signature) {
+    return false;
+  }
+
+  const wabaConfig = getWABAConfig();
+  if (!wabaConfig?.apiKey) {
+    console.warn('WABA API key not configured');
+    return false;
+  }
+
+  try {
+    const expectedSignature = crypto
+      .createHmac('sha256', wabaConfig.apiKey)
+      .update(JSON.stringify(body))
+      .digest('hex');
+    
+    const providedSignature = signature.replace('sha256=', '');
+    return crypto.timingSafeEqual(
+      Buffer.from(expectedSignature, 'hex'),
+      Buffer.from(providedSignature, 'hex')
+    );
+  } catch (error) {
+    console.error('Signature verification error:', error);
+    return false;
+  }
+}
+
+// Handle media messages - delegate to media worker
+async function handleMediaMessage(messageId: string, message: any) {
+  console.log('Media message detected:', {
+    id: messageId,
+    type: message.type,
+    mediaId: message.image?.id || message.document?.id
+  });
+
+  try {
+    // Extract tenant ID from message (this should be set by the webhook processing)
+    const tenantId = message.tenant_id;
+    const fromPhone = message.from;
+
+    if (!tenantId || !fromPhone) {
+      console.warn('Missing tenant_id or from_phone for media message');
+      return;
+    }
+
+    // Call media worker endpoint
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/media/ingest`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messageId,
+        from_phone: fromPhone,
+        tenantId
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Media worker failed:', response.status, errorText);
+      return;
+    }
+
+    const result = await response.json();
+    console.log('Media processed successfully:', {
+      eventId: result.eventId,
+      phase: result.phase,
+      storagePath: result.storagePath
+    });
+
+  } catch (error) {
+    console.error('Error processing media message:', error);
+    // Don't throw - we don't want to fail the webhook for media processing errors
+  }
 }

@@ -12,7 +12,7 @@ const envSchema = z.object({
   
   // WhatsApp Business API
   WABA_API_KEY: z.string().optional(),
-  WABA_BASE_URL: z.string().url().optional(),
+  WABA_BASE_URL: z.string().url().optional().or(z.literal('')),
   
   // Feature flags
   CLEANSTAY_ENABLED: z.string().transform(val => val === 'true').default('false'),
@@ -87,3 +87,6 @@ export const getWhatsAppConfig = () => {
     baseUrl: env.WABA_BASE_URL,
   };
 };
+
+// Alias for backward compatibility
+export const getWABAConfig = getWhatsAppConfig;
