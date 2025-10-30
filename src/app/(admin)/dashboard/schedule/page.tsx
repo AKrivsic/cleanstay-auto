@@ -1,12 +1,19 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { ResponsiveLayout } from '@/components/layout/ResponsiveLayout';
+import { Card, CardContent, CardHeader } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Modal } from '@/components/ui/Modal';
+import { Badge } from '@/components/ui/Badge';
+import { colors, spacing, typography } from '@/lib/design-system';
 
 interface Property {
   id: string;
   name: string;
   address: string;
   type: string;
+  client_id?: string;
 }
 
 interface User {
@@ -50,6 +57,11 @@ export default function SchedulePage() {
     priority: 'medium' as 'low' | 'medium' | 'high'
   });
 
+  // Filtered properties based on selected client
+  const filteredProperties = formData.client_id
+    ? properties.filter(p => p.client_id === formData.client_id)
+    : properties;
+
   useEffect(() => {
     loadData();
   }, []);
@@ -83,13 +95,14 @@ export default function SchedulePage() {
         cleaningsRes.json()
       ]);
 
-      if (propertiesData.success) setProperties(propertiesData.data);
-      if (usersData.success) {
+      // Handle both old format { success, data } and new format { data }
+      if (propertiesData.data) setProperties(propertiesData.data);
+      if (usersData.data) {
         const users = usersData.data;
         setCleaners(users.filter((u: User) => u.role === 'cleaner'));
         setClients(users.filter((u: User) => u.role === 'client'));
       }
-      if (cleaningsData.success) setCleanings(cleaningsData.data);
+      if (cleaningsData.data) setCleanings(cleaningsData.data);
     } catch (error) {
       console.error('Error loading data:', error);
       setStatus('Chyba při načítání dat');
@@ -115,7 +128,7 @@ export default function SchedulePage() {
 
       const data = await res.json();
       
-      if (data.success) {
+      if (data.success || data.data) {
         setStatus('Úklid naplánován úspěšně!');
         setFormData({
           property_id: '',
@@ -163,24 +176,15 @@ export default function SchedulePage() {
   }
 
   return (
-    <main style={{ padding: 24 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <h1>Plánování úklidů</h1>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '16px'
-          }}
-        >
-          {showForm ? 'Zrušit' : 'Naplánovat úklid'}
-        </button>
-      </div>
+    <ResponsiveLayout 
+      title="Plánování úklidů"
+      subtitle="Naplánujte a spravujte úklidy"
+      actions={
+        <Button variant="primary" onClick={() => setShowForm(true)}>
+          Naplánovat úklid
+        </Button>
+      }
+    >
 
       {status && (
         <div style={{
@@ -195,26 +199,30 @@ export default function SchedulePage() {
         </div>
       )}
 
-      {showForm && (
-        <div style={{
-          border: '2px solid #007bff',
-          borderRadius: '8px',
-          padding: '24px',
-          marginBottom: '24px',
-          backgroundColor: '#f8f9fa'
-        }}>
-          <h2>Nový úklid</h2>
+      <Modal
+        isOpen={showForm}
+        onClose={() => setShowForm(false)}
+        title="Naplánovat úklid"
+        size="large"
+      >
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
             <div>
               <label>Nemovitost *</label>
               <select
                 value={formData.property_id}
-                onChange={(e) => setFormData({...formData, property_id: e.target.value})}
+                onChange={(e) => {
+                  const property = properties.find(p => p.id === e.target.value);
+                  setFormData({
+                    ...formData, 
+                    property_id: e.target.value,
+                    client_id: property?.client_id || formData.client_id // Auto-select client
+                  });
+                }}
                 required
                 style={{ width: '100%', padding: '8px', marginTop: '4px', border: '1px solid #ddd', borderRadius: '4px' }}
               >
                 <option value="">Vyberte nemovitost</option>
-                {properties.map(property => (
+                {filteredProperties.map(property => (
                   <option key={property.id} value={property.id}>
                     {property.name} - {property.address}
                   </option>
@@ -240,7 +248,7 @@ export default function SchedulePage() {
               <label>Klient</label>
               <select
                 value={formData.client_id}
-                onChange={(e) => setFormData({...formData, client_id: e.target.value})}
+                onChange={(e) => setFormData({...formData, client_id: e.target.value, property_id: ''})}
                 style={{ width: '100%', padding: '8px', marginTop: '4px', border: '1px solid #ddd', borderRadius: '4px' }}
               >
                 <option value="">Vyberte klienta</option>
@@ -332,8 +340,7 @@ export default function SchedulePage() {
               Zrušit
             </button>
           </div>
-        </div>
-      )}
+      </Modal>
 
       <div style={{ border: '1px solid #eee', borderRadius: '8px', padding: '16px' }}>
         <h2>Naplánované úklidy ({cleanings.length})</h2>
@@ -380,6 +387,6 @@ export default function SchedulePage() {
           </table>
         </div>
       </div>
-    </main>
+    </ResponsiveLayout>
   );
 }

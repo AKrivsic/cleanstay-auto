@@ -75,11 +75,14 @@ export async function PUT(
     
     const supabase = getSupabaseServerClient();
     
+    // Handle property_ids separately
+    const { property_ids, ...userData } = body;
+    
     // Update user (only from the same tenant)
     const { error } = await supabase
       .from('users')
       .update({
-        ...body,
+        ...userData,
         updated_at: new Date().toISOString()
       })
       .eq('id', userId)
@@ -91,6 +94,25 @@ export async function PUT(
         { error: 'Failed to update user', details: error.message },
         { status: 500 }
       );
+    }
+    
+    // Update properties if property_ids is provided
+    if (property_ids && Array.isArray(property_ids)) {
+      // First, remove this client from all properties
+      await supabase
+        .from('properties')
+        .update({ client_id: null })
+        .eq('tenant_id', tenantId)
+        .eq('client_id', userId);
+      
+      // Then, set this client on the selected properties
+      if (property_ids.length > 0) {
+        await supabase
+          .from('properties')
+          .update({ client_id: userId })
+          .eq('tenant_id', tenantId)
+          .in('id', property_ids);
+      }
     }
     
     return NextResponse.json({
