@@ -128,7 +128,43 @@
   <div data-include="./src/partials/footer.html"></div>
 
   <script type="module" src="./src/main.js"></script>
-  <link rel="stylesheet" href="src/js/chat-widget.css" />
-  <script type="module" src="src/js/chat-widget.js"></script>
+  <script>
+    // Fallback inline chat embed (runs after DOM loads)
+    (function(){
+      function initChat() {
+        if (document.getElementById('chat-embed-root')) return;
+        if (!document.body) { setTimeout(initChat, 50); return; }
+        
+        const root = document.createElement('div');
+        root.id = 'chat-embed-root';
+        root.style.cssText = 'position:fixed;right:24px;bottom:24px;z-index:9999;';
+        document.body.appendChild(root);
+        
+        const fab = document.createElement('button');
+        fab.setAttribute('aria-label', 'Otevřít chat');
+        fab.textContent = '💬';
+        fab.style.cssText = 'width:48px;height:48px;border-radius:24px;border:none;background:#34D399;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.2);cursor:pointer;';
+        root.appendChild(fab);
+        
+        const frame = document.createElement('iframe');
+        frame.src = '/chat/embed';
+        frame.title = 'CleanStay Chat';
+        frame.style.cssText = 'position:absolute;right:0;bottom:56px;width:360px;height:480px;border:1px solid #E5E7EB;border-radius:12px;box-shadow:0 10px 24px rgba(0,0,0,0.25);display:none;';
+        frame.setAttribute('aria-hidden', 'true');
+        root.appendChild(frame);
+        
+        fab.addEventListener('click', function(){
+          const open = frame.style.display !== 'none';
+          frame.style.display = open ? 'none' : 'block';
+          frame.setAttribute('aria-hidden', open ? 'true' : 'false');
+        });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initChat);
+      } else {
+        initChat();
+      }
+    })();
+  </script>
   </body>
 </html>

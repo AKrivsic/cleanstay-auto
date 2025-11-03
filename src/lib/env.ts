@@ -16,6 +16,7 @@ const envSchema = z.object({
   
   // Feature flags
   CLEANSTAY_ENABLED: z.string().transform(val => val === 'true').default('false'),
+  DEFAULT_TENANT_ID: z.string().uuid().optional(),
 });
 
 // Validate environment variables
@@ -35,32 +36,36 @@ export const env = parseEnv();
 export type Env = z.infer<typeof envSchema>;
 
 // Helper to check if CleanStay is enabled
-export const isCleanStayEnabled = () => env.CLEANSTAY_ENABLED;
+export const isCleanStayEnabled = () => {
+  // On the client, treat CleanStay as enabled if public Supabase vars exist
+  if (typeof window !== 'undefined') {
+    const hasPublicSupabase = !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    return hasPublicSupabase || true; // default to true on client to allow auth/UI
+  }
+  return env.CLEANSTAY_ENABLED as unknown as boolean;
+};
 
 // Helper to get Supabase config (only if enabled)
 export const getSupabaseConfig = () => {
-  if (!isCleanStayEnabled()) {
-    return null;
-  }
-  
-  if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  // Allow client to configure from NEXT_PUBLIC_* even if CLEANSTAY_ENABLED isn't set on client
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!url || !anonKey) {
     console.warn('⚠️ Supabase configuration missing');
     return null;
   }
   
   return {
-    url: env.NEXT_PUBLIC_SUPABASE_URL,
-    anonKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    url,
+    anonKey,
     serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
   };
 };
 
 // Helper to get OpenAI config (only if enabled)
 export const getOpenAIConfig = () => {
-  if (!isCleanStayEnabled()) {
-    return null;
-  }
-  
+  // Allow OpenAI usage if key exists, regardless of CLEANSTAY flag
   if (!env.OPENAI_API_KEY) {
     console.warn('⚠️ OpenAI API key missing');
     return null;
@@ -90,3 +95,5 @@ export const getWhatsAppConfig = () => {
 
 // Alias for backward compatibility
 export const getWABAConfig = getWhatsAppConfig;
+
+export const getDefaultTenantId = () => env.DEFAULT_TENANT_ID || null;

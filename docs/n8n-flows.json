@@ -1,0 +1,336 @@
+{
+  "flows": [
+    {
+      "name": "Flow A - Den před úklidem (Reminder)",
+      "id": "cleaning_reminder_flow",
+      "description": "Odesílá připomínky den před plánovaným úklidem s respektováním quiet hours",
+      "nodes": [
+        {
+          "id": "cron_trigger",
+          "type": "n8n-nodes-base.cron",
+          "name": "Cron Trigger",
+          "parameters": {
+            "rule": {
+              "interval": [
+                {
+                  "field": "hour",
+                  "value": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "get_tomorrow_schedule",
+          "type": "n8n-nodes-base.httpRequest",
+          "name": "Get Tomorrow Schedule",
+          "parameters": {
+            "url": "{{$env.BASE_URL}}/api/admin/schedule/tomorrow",
+            "method": "GET",
+            "headers": {
+              "Authorization": "Bearer {{$env.API_TOKEN}}"
+            }
+          }
+        },
+        {
+          "id": "check_quiet_hours",
+          "type": "n8n-nodes-base.if",
+          "name": "Check Quiet Hours",
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "strict"
+              },
+              "conditions": [
+                {
+                  "id": "quiet_hours_check",
+                  "leftValue": "{{$json.quiet_hours}}",
+                  "rightValue": true,
+                  "operator": {
+                    "type": "boolean",
+                    "operation": "equal"
+                  }
+                }
+              ],
+              "combinator": "and"
+            }
+          }
+        },
+        {
+          "id": "check_already_sent",
+          "type": "n8n-nodes-base.if",
+          "name": "Check Already Sent",
+          "parameters": {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "strict"
+              },
+              "conditions": [
+                {
+                  "id": "already_sent_check",
+                  "leftValue": "{{$json.notification_sent_today}}",
+                  "rightValue": false,
+                  "operator": {
+                    "type": "boolean",
+                    "operation": "equal"
+                  }
+                }
+              ],
+              "combinator": "and"
+            }
+          }
+        },
+        {
+          "id": "wait_until_allowed",
+          "type": "n8n-nodes-base.wait",
+          "name": "Wait Until Allowed",
+          "parameters": {
+            "amount": 1,
+            "unit": "hours"
+          }
+        },
+        {
+          "id": "send_reminder",
+          "type": "n8n-nodes-base.httpRequest",
+          "name": "Send Reminder",
+          "parameters": {
+            "url": "{{$env.BASE_URL}}/api/admin/notify/whatsapp",
+            "method": "POST",
+            "headers": {
+              "Authorization": "Bearer {{$env.API_TOKEN}}",
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "to": "{{$json.phone}}",
+              "template": "cleaning_reminder",
+              "language": "{{$json.language}}",
+              "variables": {
+                "property_name": "{{$json.property_name}}",
+                "date": "{{$json.date}}",
+                "start_time": "{{$json.start_time}}",
+                "confirm_link": "{{$json.confirm_link}}"
+              }
+            }
+          }
+        },
+        {
+          "id": "log_notification",
+          "type": "n8n-nodes-base.httpRequest",
+          "name": "Log Notification",
+          "parameters": {
+            "url": "{{$env.BASE_URL}}/api/admin/events",
+            "method": "POST",
+            "headers": {
+              "Authorization": "Bearer {{$env.API_TOKEN}}",
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "type": "notification_sent",
+              "cleaning_id": "{{$json.cleaning_id}}",
+              "recipient": "{{$json.phone}}",
+              "template": "cleaning_reminder",
+              "language": "{{$json.language}}"
+            }
+          }
+        }
+      ],
+      "connections": {
+        "cron_trigger": ["get_tomorrow_schedule"],
+        "get_tomorrow_schedule": ["check_quiet_hours"],
+        "check_quiet_hours": ["wait_until_allowed", "check_already_sent"],
+        "check_already_sent": ["send_reminder"],
+        "wait_until_allowed": ["send_reminder"],
+        "send_reminder": ["log_notification"]
+      }
+    },
+    {
+      "name": "Flow B - Checklist po startu",
+      "id": "cleaner_checklist_flow",
+      "description": "Odesílá checklist uklízečce po zahájení úklidu",
+      "nodes": [
+        {
+          "id": "webhook_trigger",
+          "type": "n8n-nodes-base.webhook",
+          "name": "Webhook Trigger",
+          "parameters": {
+            "path": "cleaning-started",
+            "httpMethod": "POST"
+          }
+        },
+        {
+          "id": "delay_2min",
+          "type": "n8n-nodes-base.wait",
+          "name": "Delay 2 min",
+          "parameters": {
+            "amount": 2,
+            "unit": "minutes"
+          }
+        },
+        {
+          "id": "send_checklist",
+          "type": "n8n-nodes-base.httpRequest",
+          "name": "Send Checklist",
+          "parameters": {
+            "url": "{{$env.BASE_URL}}/api/admin/notify/whatsapp",
+            "method": "POST",
+            "headers": {
+              "Authorization": "Bearer {{$env.API_TOKEN}}",
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "to": "{{$json.cleaner_phone}}",
+              "template": "cleaner_checklist",
+              "language": "{{$json.cleaner_language}}",
+              "variables": {
+                "property_name": "{{$json.property_name}}",
+                "checklist_short": "{{$json.checklist_short}}"
+              }
+            }
+          }
+        },
+        {
+          "id": "log_checklist_sent",
+          "type": "n8n-nodes-base.httpRequest",
+          "name": "Log Checklist Sent",
+          "parameters": {
+            "url": "{{$env.BASE_URL}}/api/admin/events",
+            "method": "POST",
+            "headers": {
+              "Authorization": "Bearer {{$env.API_TOKEN}}",
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "type": "notification_sent",
+              "cleaning_id": "{{$json.cleaning_id}}",
+              "recipient": "{{$json.cleaner_phone}}",
+              "template": "cleaner_checklist",
+              "language": "{{$json.cleaner_language}}"
+            }
+          }
+        }
+      ],
+      "connections": {
+        "webhook_trigger": ["delay_2min"],
+        "delay_2min": ["send_checklist"],
+        "send_checklist": ["log_checklist_sent"]
+      }
+    },
+    {
+      "name": "Flow C - Shrnutí po dokončení",
+      "id": "post_cleaning_summary_flow",
+      "description": "Odesílá shrnutí klientovi po dokončení úklidu",
+      "nodes": [
+        {
+          "id": "webhook_trigger",
+          "type": "n8n-nodes-base.webhook",
+          "name": "Webhook Trigger",
+          "parameters": {
+            "path": "cleaning-completed",
+            "httpMethod": "POST"
+          }
+        },
+        {
+          "id": "get_cleaning_report",
+          "type": "n8n-nodes-base.httpRequest",
+          "name": "Get Cleaning Report",
+          "parameters": {
+            "url": "{{$env.BASE_URL}}/api/admin/reports/cleaning",
+            "method": "GET",
+            "headers": {
+              "Authorization": "Bearer {{$env.API_TOKEN}}"
+            },
+            "qs": {
+              "propertyId": "{{$json.property_id}}",
+              "date": "{{$json.date}}",
+              "withPhotos": "false"
+            }
+          }
+        },
+        {
+          "id": "format_summary",
+          "type": "n8n-nodes-base.function",
+          "name": "Format Summary",
+          "parameters": {
+            "functionCode": "// Zkrácení textu pro WhatsApp\nconst report = $input.first().json;\nconst duration = report.durationMin ? `${report.durationMin} min` : 'N/A';\nconst supplies = report.summary?.supplies?.slice(0, 3).join(', ') || 'Žádné';\nconst photoCount = report.summary?.photosCount || 0;\n\nreturn {\n  duration: duration,\n  supplies_short: supplies,\n  photo_gallery_link: `${$env.BASE_URL}/client/portal/cleanings/${report.cleaning_id}`,\n  ...$input.first().json\n};"
+          }
+        },
+        {
+          "id": "send_summary",
+          "type": "n8n-nodes-base.httpRequest",
+          "name": "Send Summary",
+          "parameters": {
+            "url": "{{$env.BASE_URL}}/api/admin/notify/whatsapp",
+            "method": "POST",
+            "headers": {
+              "Authorization": "Bearer {{$env.API_TOKEN}}",
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "to": "{{$json.client_phone}}",
+              "template": "post_cleaning_summary",
+              "language": "{{$json.client_language}}",
+              "variables": {
+                "property_name": "{{$json.property_name}}",
+                "duration": "{{$json.duration}}",
+                "supplies_short": "{{$json.supplies_short}}",
+                "photo_gallery_link": "{{$json.photo_gallery_link}}"
+              }
+            }
+          }
+        },
+        {
+          "id": "log_summary_sent",
+          "type": "n8n-nodes-base.httpRequest",
+          "name": "Log Summary Sent",
+          "parameters": {
+            "url": "{{$env.BASE_URL}}/api/admin/events",
+            "method": "POST",
+            "headers": {
+              "Authorization": "Bearer {{$env.API_TOKEN}}",
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "type": "notification_sent",
+              "cleaning_id": "{{$json.cleaning_id}}",
+              "recipient": "{{$json.client_phone}}",
+              "template": "post_cleaning_summary",
+              "language": "{{$json.client_language}}"
+            }
+          }
+        }
+      ],
+      "connections": {
+        "webhook_trigger": ["get_cleaning_report"],
+        "get_cleaning_report": ["format_summary"],
+        "format_summary": ["send_summary"],
+        "send_summary": ["log_summary_sent"]
+      }
+    }
+  ],
+  "environment_variables": {
+    "BASE_URL": "https://your-domain.com",
+    "API_TOKEN": "your-api-token",
+    "WABA_API_KEY": "your-waba-api-key",
+    "WABA_BASE_URL": "https://waba.360dialog.io"
+  },
+  "rate_limiting": {
+    "max_requests_per_recipient": 1,
+    "time_window": "30 seconds",
+    "retry_attempts": 3,
+    "retry_delays": ["5s", "30s", "2m"]
+  },
+  "quiet_hours": {
+    "start": "21:00",
+    "end": "08:00",
+    "timezone": "Europe/Prague"
+  }
+}
+
+
+
+
+

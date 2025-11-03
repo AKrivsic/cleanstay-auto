@@ -7,13 +7,17 @@ export const createSupabaseClient = () => {
   
   if (!config) {
     // Return a mock client when CleanStay is disabled or config is missing
+    const chainableResponse = (data: any[] = []) => ({
+      select: (_cols?: string) => chainableResponse(data),
+      eq: (_col?: string, _val?: any) => chainableResponse(data),
+      order: (_col?: string, _opts?: any) => Promise.resolve({ data, error: null }),
+      insert: (_rows?: any) => Promise.resolve({ data: [], error: null }),
+      update: (_values?: any) => Promise.resolve({ data: [], error: null }),
+      delete: () => Promise.resolve({ data: [], error: null }),
+    });
+
     return {
-      from: () => ({
-        select: () => Promise.resolve({ data: [], error: null }),
-        insert: () => Promise.resolve({ data: [], error: null }),
-        update: () => Promise.resolve({ data: [], error: null }),
-        delete: () => Promise.resolve({ data: [], error: null }),
-      }),
+      from: (_table: string) => chainableResponse(),
       channel: () => ({
         on: () => ({ subscribe: () => ({ unsubscribe: () => {} }) }),
         subscribe: () => ({ unsubscribe: () => {} }),
@@ -21,6 +25,20 @@ export const createSupabaseClient = () => {
       auth: {
         getUser: () => Promise.resolve({ data: { user: null }, error: null }),
         signIn: () => Promise.resolve({ data: { user: null }, error: null }),
+        signInWithPassword: ({ email, password }: { email: string; password: string }) => {
+          console.error('Mock client: Cannot sign in. Missing Supabase env variables.');
+          return Promise.resolve({ 
+            data: { user: null, session: null }, 
+            error: { message: 'Supabase not configured. Check env variables.' } 
+          });
+        },
+        signUp: ({ email, password }: { email: string; password: string }) => {
+          console.error('Mock client: Cannot sign up. Missing Supabase env variables.');
+          return Promise.resolve({ 
+            data: { user: null, session: null }, 
+            error: { message: 'Supabase not configured. Check env variables.' } 
+          });
+        },
         signOut: () => Promise.resolve({ error: null }),
       },
     } as any;

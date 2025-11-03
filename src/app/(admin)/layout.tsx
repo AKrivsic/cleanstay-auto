@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { ToastProvider } from '@/components/ui/Toast'
+import AdminLayoutClient from './_components/AdminLayoutClient'
 
 export const metadata: Metadata = {
   title: 'Admin Dashboard - CleanStay',
@@ -12,9 +14,11 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="admin-layout">
-      {children}
-    </div>
+    <ToastProvider>
+      <AdminLayoutClient>
+        {children}
+      </AdminLayoutClient>
+    </ToastProvider>
   )
 }
 

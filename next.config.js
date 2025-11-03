@@ -14,11 +14,7 @@ const nextConfig = {
   },
   async rewrites() {
     return [
-      // Pretty URLs for static marketing pages
-      { source: '/cenik', destination: '/cenik.html' },
-      { source: '/uklid-domacnosti', destination: '/uklid-domacnosti.html' },
-      { source: '/uklid-firem', destination: '/uklid-firem.html' },
-      { source: '/airbnb', destination: '/airbnb.html' },
+      // Pretty URLs for static marketing pages (remaining)
     ];
   },
 }

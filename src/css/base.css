@@ -50,11 +50,13 @@ img {
     z-index: -1;
 }
 /* --- fonts.css --- */
+/* Font files not available - using system fonts as fallback */
+/* If you want to add Poppins font, place font files in public/fonts/ and uncomment below */
+/*
 @font-face {
     font-family: 'Poppins';
-    src: url('Poppins-Regular.woff2') format('woff2'),
-        url('Poppins-Regular.woff') format('woff'),
-        url('Poppins-Regular.ttf') format('truetype');
+    src: url('/fonts/Poppins-Regular.woff2') format('woff2'),
+        url('/fonts/Poppins-Regular.woff') format('woff');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -62,9 +64,8 @@ img {
 
 @font-face {
     font-family: 'Poppins';
-    src: url('Poppins-Light.woff2') format('woff2'),
-        url('Poppins-Light.woff') format('woff'),
-        url('Poppins-Light.ttf') format('truetype');
+    src: url('/fonts/Poppins-Light.woff2') format('woff2'),
+        url('/fonts/Poppins-Light.woff') format('woff');
     font-weight: 300;
     font-style: normal;
     font-display: swap;
@@ -72,9 +73,8 @@ img {
 
 @font-face {
     font-family: 'Poppins';
-    src: url('Poppins-Medium.woff2') format('woff2'),
-        url('Poppins-Medium.woff') format('woff'),
-        url('Poppins-Medium.ttf') format('truetype');
+    src: url('/fonts/Poppins-Medium.woff2') format('woff2'),
+        url('/fonts/Poppins-Medium.woff') format('woff');
     font-weight: 500;
     font-style: normal;
     font-display: swap;
@@ -82,23 +82,13 @@ img {
 
 @font-face {
     font-family: 'Poppins';
-    src: url('Poppins-SemiBold.woff2') format('woff2'),
-        url('Poppins-SemiBold.woff') format('woff'),
-        url('Poppins-SemiBold.ttf') format('truetype');
+    src: url('/fonts/Poppins-SemiBold.woff2') format('woff2'),
+        url('/fonts/Poppins-SemiBold.woff') format('woff');
     font-weight: 600;
     font-style: normal;
     font-display: swap;
 }
-
-@font-face {
-    font-family: 'Impact';
-    src: url('Impact.woff2') format('woff2'),
-        url('Impact.woff') format('woff'),
-        url('Impact.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
+*/
 /* --- base.css --- */
 :root {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
@@ -110,8 +100,8 @@ img {
     font-synthesis: none;
     text-rendering: optimizeLegibility;
 
-    --font-main: 'Poppins', sans-serif;
-    --font-helpers: 'Impact', sans-serif;
+    --font-main: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-helpers: system-ui, sans-serif;
 }
 
 body {

@@ -1,0 +1,279 @@
+{
+  "templates": [
+    {
+      "name": "cleaning_reminder",
+      "category": "UTILITY",
+      "languages": {
+        "cs": {
+          "name": "cleaning_reminder_cs",
+          "language": "cs",
+          "components": [
+            {
+              "type": "HEADER",
+              "format": "TEXT",
+              "text": "Připomínka úklidu"
+            },
+            {
+              "type": "BODY",
+              "text": "Dobrý den! Připomínáme Vám úklid v objektu {property_name} zítra {date} v {start_time}. Prosím potvrďte účast odpovědí ANO nebo NE. Děkujeme!"
+            },
+            {
+              "type": "FOOTER",
+              "text": "CleanStay"
+            },
+            {
+              "type": "BUTTONS",
+              "buttons": [
+                {
+                  "type": "URL",
+                  "text": "Potvrdit",
+                  "url": "{confirm_link}"
+                }
+              ]
+            }
+          ]
+        },
+        "uk": {
+          "name": "cleaning_reminder_uk",
+          "language": "uk",
+          "components": [
+            {
+              "type": "HEADER",
+              "format": "TEXT",
+              "text": "Нагадування про прибирання"
+            },
+            {
+              "type": "BODY",
+              "text": "Доброго дня! Нагадуємо про прибирання в об'єкті {property_name} завтра {date} о {start_time}. Будь ласка, підтвердіть участь відповіддю ТАК або НІ. Дякуємо!"
+            },
+            {
+              "type": "FOOTER",
+              "text": "CleanStay"
+            },
+            {
+              "type": "BUTTONS",
+              "buttons": [
+                {
+                  "type": "URL",
+                  "text": "Підтвердити",
+                  "url": "{confirm_link}"
+                }
+              ]
+            }
+          ]
+        },
+        "en": {
+          "name": "cleaning_reminder_en",
+          "language": "en",
+          "components": [
+            {
+              "type": "HEADER",
+              "format": "TEXT",
+              "text": "Cleaning Reminder"
+            },
+            {
+              "type": "BODY",
+              "text": "Hello! We remind you about cleaning at {property_name} tomorrow {date} at {start_time}. Please confirm your participation by replying YES or NO. Thank you!"
+            },
+            {
+              "type": "FOOTER",
+              "text": "CleanStay"
+            },
+            {
+              "type": "BUTTONS",
+              "buttons": [
+                {
+                  "type": "URL",
+                  "text": "Confirm",
+                  "url": "{confirm_link}"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "cleaner_checklist",
+      "category": "UTILITY",
+      "languages": {
+        "cs": {
+          "name": "cleaner_checklist_cs",
+          "language": "cs",
+          "components": [
+            {
+              "type": "HEADER",
+              "format": "TEXT",
+              "text": "Úklid zahájen"
+            },
+            {
+              "type": "BODY",
+              "text": "Úklid v {property_name} byl zahájen. Checklist: {checklist_short}. Nezapomeňte pořídit fotografie před a po úklidu. Hodně štěstí!"
+            },
+            {
+              "type": "FOOTER",
+              "text": "CleanStay"
+            }
+          ]
+        },
+        "uk": {
+          "name": "cleaner_checklist_uk",
+          "language": "uk",
+          "components": [
+            {
+              "type": "HEADER",
+              "format": "TEXT",
+              "text": "Прибирання розпочато"
+            },
+            {
+              "type": "BODY",
+              "text": "Прибирання в {property_name} розпочато. Чек-лист: {checklist_short}. Не забудьте зробити фотографії до і після прибирання. Удачі!"
+            },
+            {
+              "type": "FOOTER",
+              "text": "CleanStay"
+            }
+          ]
+        },
+        "en": {
+          "name": "cleaner_checklist_en",
+          "language": "en",
+          "components": [
+            {
+              "type": "HEADER",
+              "format": "TEXT",
+              "text": "Cleaning Started"
+            },
+            {
+              "type": "BODY",
+              "text": "Cleaning at {property_name} has started. Checklist: {checklist_short}. Don't forget to take photos before and after cleaning. Good luck!"
+            },
+            {
+              "type": "FOOTER",
+              "text": "CleanStay"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "post_cleaning_summary",
+      "category": "UTILITY",
+      "languages": {
+        "cs": {
+          "name": "post_cleaning_summary_cs",
+          "language": "cs",
+          "components": [
+            {
+              "type": "HEADER",
+              "format": "TEXT",
+              "text": "Úklid dokončen"
+            },
+            {
+              "type": "BODY",
+              "text": "Úklid v {property_name} byl úspěšně dokončen za {duration}. Spotřebované zásoby: {supplies_short}. Fotografie najdete v galerii."
+            },
+            {
+              "type": "FOOTER",
+              "text": "CleanStay"
+            },
+            {
+              "type": "BUTTONS",
+              "buttons": [
+                {
+                  "type": "URL",
+                  "text": "Zobrazit fotografie",
+                  "url": "{photo_gallery_link}"
+                }
+              ]
+            }
+          ]
+        },
+        "uk": {
+          "name": "post_cleaning_summary_uk",
+          "language": "uk",
+          "components": [
+            {
+              "type": "HEADER",
+              "format": "TEXT",
+              "text": "Прибирання завершено"
+            },
+            {
+              "type": "BODY",
+              "text": "Прибирання в {property_name} успішно завершено за {duration}. Витрачені матеріали: {supplies_short}. Фотографії знайдете в галереї."
+            },
+            {
+              "type": "FOOTER",
+              "text": "CleanStay"
+            },
+            {
+              "type": "BUTTONS",
+              "buttons": [
+                {
+                  "type": "URL",
+                  "text": "Переглянути фото",
+                  "url": "{photo_gallery_link}"
+                }
+              ]
+            }
+          ]
+        },
+        "en": {
+          "name": "post_cleaning_summary_en",
+          "language": "en",
+          "components": [
+            {
+              "type": "HEADER",
+              "format": "TEXT",
+              "text": "Cleaning Completed"
+            },
+            {
+              "type": "BODY",
+              "text": "Cleaning at {property_name} has been successfully completed in {duration}. Supplies used: {supplies_short}. Photos are available in the gallery."
+            },
+            {
+              "type": "FOOTER",
+              "text": "CleanStay"
+            },
+            {
+              "type": "BUTTONS",
+              "buttons": [
+                {
+                  "type": "URL",
+                  "text": "View Photos",
+                  "url": "{photo_gallery_link}"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "approval_process": {
+    "description": "Proces schválení WhatsApp šablon přes 360dialog",
+    "steps": [
+      "1. Nahrajte šablony přes 360dialog API nebo Business Manager",
+      "2. Počkejte na schválení Meta (obvykle 24-48 hodin)",
+      "3. Ověřte stav schválení přes API",
+      "4. Testujte šablony v sandbox prostředí",
+      "5. Aktivujte produkční použití"
+    ],
+    "api_endpoints": {
+      "upload": "POST /v1/messages/templates",
+      "status": "GET /v1/messages/templates/{template_id}",
+      "test": "POST /v1/messages/templates/{template_id}/test"
+    },
+    "requirements": {
+      "max_length": 320,
+      "no_marketing": true,
+      "clear_purpose": true,
+      "user_opt_in": true
+    }
+  }
+}
+
+
+
+
+
