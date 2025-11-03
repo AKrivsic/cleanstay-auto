@@ -6,12 +6,17 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 export const runtime = 'nodejs';
 
-// Get environment variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-// Initialize Supabase client
-const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
+// Get Supabase client (lazy initialization to avoid build-time errors)
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('Supabase configuration missing');
+  }
+  
+  return createClient(supabaseUrl, supabaseServiceKey);
+}
 
 // Get git SHA for version
 function getGitSha(): string {
@@ -31,6 +36,7 @@ function getEnvironment(): string {
 // Check database connectivity
 async function checkDatabase(): Promise<{ status: 'ok' | 'fail'; message: string }> {
   try {
+    const supabase = getSupabaseClient();
     const { error } = await supabase
       .from('tenants')
       .select('id')
@@ -49,6 +55,7 @@ async function checkDatabase(): Promise<{ status: 'ok' | 'fail'; message: string
 // Check storage connectivity
 async function checkStorage(): Promise<{ status: 'ok' | 'fail'; message: string }> {
   try {
+    const supabase = getSupabaseClient();
     const { data: buckets, error } = await supabase.storage.listBuckets();
     
     if (error) {
@@ -69,6 +76,7 @@ async function checkStorage(): Promise<{ status: 'ok' | 'fail'; message: string 
 // Check RLS policies
 async function checkRLS(): Promise<{ status: 'ok' | 'fail'; message: string }> {
   try {
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('tenants')
       .select('id, name')
@@ -87,6 +95,7 @@ async function checkRLS(): Promise<{ status: 'ok' | 'fail'; message: string }> {
 // Check pilot data
 async function checkPilotData(): Promise<{ status: 'ok' | 'fail'; message: string }> {
   try {
+    const supabase = getSupabaseClient();
     const { data: tenants, error: tenantError } = await supabase
       .from('tenants')
       .select('id, name')
@@ -212,6 +221,7 @@ export async function GET(request: NextRequest) {
 export async function HEAD(request: NextRequest) {
   try {
     // Quick database ping
+    const supabase = getSupabaseClient();
     await supabase
       .from('tenants')
       .select('id')
