@@ -241,6 +241,19 @@ footer.contact {
     display: flex;
     gap: 40px;
     align-items: center;
+    height: 100%;
+}
+
+.nav-list a {
+    display: inline-flex;
+    align-items: center;
+}
+
+.nav-list li {
+    display: flex;
+    align-items: center;
+    height: 80px;
+    margin-bottom: 0; /* override global ul li margin */
 }
 
 .nav-link {

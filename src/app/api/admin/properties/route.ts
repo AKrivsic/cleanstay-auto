@@ -95,48 +95,17 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  if (!isCleanStayEnabled()) {
-    return NextResponse.json(
-      { error: 'CleanStay feature is disabled' },
-      { status: 503 }
-    );
-  }
-
   try {
-    const { searchParams } = new URL(request.url);
-    const tenantId = searchParams.get('tenant_id');
-    
+    const tenantId = request.headers.get('x-tenant-id') || '550e8400-e29b-41d4-a716-446655440000';
     const supabase = getSupabaseServerClient();
-    
-    let query = supabase
+    const { data, error } = await supabase
       .from('properties')
       .select('*')
+      .eq('tenant_id', tenantId)
       .order('created_at', { ascending: false });
-    
-    if (tenantId) {
-      query = query.eq('tenant_id', tenantId);
-    }
-    
-    const { data, error } = await query;
-    
-    if (error) {
-      console.error('Failed to fetch properties:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch properties' },
-        { status: 500 }
-      );
-    }
-    
-    return NextResponse.json({
-      success: true,
-      data,
-    });
-    
-  } catch (error) {
-    console.error('Fetch properties error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ data });
+  } catch (e: any) {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

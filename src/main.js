@@ -1,8 +1,8 @@
 // import './css/style.css';
 import { initBurgerMenu } from './js/burgerMenu.js';
 import { initCalculator } from './js/calculator.js';
-import './js/chat-widget.js';
 import './css/style.css';
+import './js/chat-embed.js';
 
 // 1. Načtení partialů
 async function loadPartials() {

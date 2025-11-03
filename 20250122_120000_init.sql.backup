@@ -1,0 +1,105 @@
+create extension if not exists pgcrypto;
+
+create table public.tenants (
+  id uuid primary key default gen_random_uuid(),
+  name text not null unique,
+  plan text,
+  created_at timestamptz not null default now()
+);
+
+create table public.users (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references public.tenants(id) on delete cascade,
+  email text not null unique,
+  name text,
+  role text,
+  created_at timestamptz not null default now()
+);
+
+create table public.properties (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references public.tenants(id) on delete cascade,
+  name text not null,
+  type text not null,
+  address jsonb,
+  created_at timestamptz not null default now()
+);
+
+create table public.client_profiles (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references public.tenants(id) on delete cascade,
+  property_id uuid not null references public.properties(id) on delete cascade,
+  data jsonb not null,
+  created_at timestamptz not null default now(),
+  unique (property_id)
+);
+
+create table public.cleanings (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references public.tenants(id) on delete cascade,
+  property_id uuid not null references public.properties(id) on delete cascade,
+  scheduled_start timestamptz,
+  scheduled_end timestamptz,
+  status text,
+  assigned_to uuid references public.users(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+
+create table public.events (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references public.tenants(id) on delete cascade,
+  property_id uuid not null references public.properties(id) on delete cascade,
+  cleaning_id uuid references public.cleanings(id) on delete cascade,
+  type text not null,
+  start timestamptz not null,
+  supply_out jsonb,
+  linen_used integer,
+  note text,
+  photo text,
+  done boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+create table public.messages (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references public.tenants(id) on delete cascade,
+  property_id uuid references public.properties(id) on delete set null,
+  user_id uuid references public.users(id) on delete set null,
+  channel text,
+  direction text check (direction in ('in','out')),
+  raw jsonb not null,
+  created_at timestamptz not null default now()
+);
+
+create table public.supplies (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references public.tenants(id) on delete cascade,
+  name text not null,
+  unit text,
+  sku text,
+  created_at timestamptz not null default now()
+);
+
+create table public.inventory (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references public.tenants(id) on delete cascade,
+  property_id uuid references public.properties(id) on delete set null,
+  supply_id uuid not null references public.supplies(id) on delete cascade,
+  quantity numeric(12,2) not null,
+  direction text not null check (direction in ('in','out')),
+  note text,
+  created_at timestamptz not null default now()
+);
+
+create table public.active_sessions (
+  id uuid primary key default gen_random_uuid(),
+  tenant_id uuid not null references public.tenants(id) on delete cascade,
+  user_id uuid not null references public.users(id) on delete cascade,
+  session_token text not null unique,
+  device text,
+  ip inet,
+  created_at timestamptz not null default now(),
+  last_seen_at timestamptz,
+  expires_at timestamptz
+);
+
