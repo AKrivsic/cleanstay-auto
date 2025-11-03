@@ -103,3 +103,4 @@ temp/
 *.log
 .env.backup
 
+.vercel
