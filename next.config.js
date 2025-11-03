@@ -19,6 +19,16 @@ const nextConfig = {
     ];
   },
   webpack: (config, { isServer }) => {
+    // Add .mjs to module extensions
+    config.resolve.extensions = [...(config.resolve.extensions || []), '.mjs', '.js'];
+    
+    // Ensure proper module resolution for ESM packages
+    config.module.rules.push({
+      test: /\.mjs$/,
+      include: /node_modules/,
+      type: 'javascript/auto',
+    });
+
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
