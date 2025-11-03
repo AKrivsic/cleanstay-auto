@@ -49,7 +49,6 @@ export async function POST(request: NextRequest) {
         tenant_id: tenantId,
         property_id: cleaningData.property_id,
         cleaner_id: cleaningData.cleaner_id,
-        client_id: cleaningData.client_id,
         status: 'scheduled',
         scheduled_date: cleaningData.scheduled_date,
         started_at: null,
@@ -69,14 +68,11 @@ export async function POST(request: NextRequest) {
         id,
         property_id,
         cleaner_id,
-        client_id,
         status,
         scheduled_date,
         notes,
         metadata,
-        properties!inner(name, address),
-        users!cleanings_cleaner_id_fkey(name, email),
-        users!cleanings_client_id_fkey(name, email)
+        properties(name, address)
       `)
       .single();
     
@@ -154,7 +150,6 @@ export async function GET(request: NextRequest) {
         id,
         property_id,
         cleaner_id,
-        client_id,
         status,
         scheduled_date,
         started_at,
@@ -162,12 +157,9 @@ export async function GET(request: NextRequest) {
         notes,
         metadata,
         created_at,
-        properties!inner(name, address, type),
-        users!cleanings_cleaner_id_fkey(name, email, phone),
-        users!cleanings_client_id_fkey(name, email, phone)
+        properties(name, address, type, client_id)
       `)
-      .eq('tenant_id', tenantId)
-      .order('scheduled_date', { ascending: false });
+      .eq('tenant_id', tenantId);
     
     if (status) {
       query = query.eq('status', status);
@@ -176,6 +168,8 @@ export async function GET(request: NextRequest) {
     if (propertyId) {
       query = query.eq('property_id', propertyId);
     }
+    
+    query = query.order('scheduled_date', { ascending: false });
     
     // Add pagination
     const from = (page - 1) * pageSize;
@@ -192,9 +186,32 @@ export async function GET(request: NextRequest) {
       );
     }
     
+    // Fetch related users separately
+    const cleanerIds = cleanings?.filter((c: any) => c.cleaner_id).map((c: any) => c.cleaner_id);
+    const clientIds = cleanings?.filter((c: any) => c.properties?.client_id).map((c: any) => c.properties.client_id);
+    const allUserIds = ([...(cleanerIds || []), ...(clientIds || [])] as any[])
+      .filter((value, index, self) => self.indexOf(value) === index);
+    
+    let usersMap: Map<string, any> = new Map();
+    if (allUserIds.length > 0) {
+      const { data: users } = await supabase
+        .from('users')
+        .select('id, name, email, phone')
+        .in('id', allUserIds);
+      
+      users?.forEach((user: any) => usersMap.set(user.id, user));
+    }
+    
+    // Enrich cleanings with user data
+    const enrichedCleanings = cleanings?.map((cleaning: any) => ({
+      ...cleaning,
+      cleaner: cleaning.cleaner_id ? usersMap.get(cleaning.cleaner_id) : null,
+      client: cleaning.properties?.client_id ? usersMap.get(cleaning.properties.client_id) : null,
+    }));
+    
     return NextResponse.json({
       success: true,
-      data: cleanings || [],
+      data: enrichedCleanings || [],
       pagination: {
         page,
         page_size: pageSize,

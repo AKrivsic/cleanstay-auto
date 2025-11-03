@@ -697,7 +697,7 @@ export function EnhancedManagePage() {
             createType === 'cleaner' ? 'Nová uklízečka' :
             'Nová nemovitost'
           }
-          size="large"
+          size="lg"
         >
           {createType !== 'property' ? (
             <form
@@ -883,7 +883,7 @@ export function EnhancedManagePage() {
             setEditingUser(null);
           }}
           title={`Upravit ${editingUser?.role === 'client' ? 'klienta' : 'uklízečku'}`}
-          size="large"
+          size="lg"
         >
           {editingUser && (
             <form
@@ -1054,7 +1054,7 @@ export function EnhancedManagePage() {
             setEditingProperty(null);
           }}
           title="Upravit nemovitost"
-          size="large"
+          size="lg"
         >
           {editingProperty && (
             <form

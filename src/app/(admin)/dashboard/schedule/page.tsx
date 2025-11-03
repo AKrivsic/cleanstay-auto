@@ -203,7 +203,7 @@ export default function SchedulePage() {
         isOpen={showForm}
         onClose={() => setShowForm(false)}
         title="Naplánovat úklid"
-        size="large"
+        size="lg"
       >
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
             <div>
