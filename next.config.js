@@ -13,6 +13,7 @@ const nextConfig = {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
   transpilePackages: ['openai'],
+  serverComponentsExternalPackages: ['openai'],
   async rewrites() {
     return [
       // Pretty URLs for static marketing pages (remaining)
@@ -20,13 +21,18 @@ const nextConfig = {
   },
   webpack: (config, { isServer }) => {
     // Add .mjs to module extensions
-    config.resolve.extensions = [...(config.resolve.extensions || []), '.mjs', '.js'];
+    if (!config.resolve.extensions.includes('.mjs')) {
+      config.resolve.extensions.unshift('.mjs');
+    }
     
     // Ensure proper module resolution for ESM packages
     config.module.rules.push({
       test: /\.mjs$/,
       include: /node_modules/,
       type: 'javascript/auto',
+      resolve: {
+        fullySpecified: false,
+      },
     });
 
     if (!isServer) {
