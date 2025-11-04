@@ -44,6 +44,10 @@ export const createSupabaseServerClient = () => {
           download: () => Promise.resolve({ data: null, error: null }),
           list: () => Promise.resolve({ data: [], error: null }),
           remove: () => Promise.resolve({ data: [], error: null }),
+          createSignedUrl: () => Promise.resolve({ 
+            data: { signedUrl: null }, 
+            error: { message: 'Storage not configured' } 
+          }),
         }),
         listBuckets: () => Promise.resolve({ data: [], error: null }),
       },

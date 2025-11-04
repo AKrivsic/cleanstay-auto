@@ -77,24 +77,41 @@ export async function getSignedUrl(
 ): Promise<string> {
   const supabase = getSupabaseServerClient();
   
+  // Validate inputs
+  if (!path || !bucket) {
+    console.error('Invalid parameters for getSignedUrl:', { bucket, path });
+    throw new Error('Bucket and path are required');
+  }
+
   try {
     const { data, error } = await supabase.storage
       .from(bucket)
       .createSignedUrl(path, ttlSeconds);
 
     if (error) {
+      console.error('Supabase storage error:', {
+        bucket,
+        path: path.substring(0, 50) + '...',
+        error: error.message,
+        code: error.statusCode
+      });
       throw new Error(`Failed to create signed URL: ${error.message}`);
     }
 
     if (!data?.signedUrl) {
+      console.error('No signed URL returned from Supabase:', { bucket, path: path.substring(0, 50) + '...' });
       throw new Error('No signed URL returned');
     }
 
     return data.signedUrl;
 
   } catch (error) {
-    console.error('Error creating signed URL:', error);
-    throw new Error(`Failed to create signed URL: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error('Error creating signed URL:', {
+      bucket,
+      path: path?.substring(0, 50) + '...',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+    throw error;
   }
 }
 
