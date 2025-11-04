@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -34,19 +35,37 @@ export default function HomePage() {
           <h2 className="title">Naše služby</h2>
           <div className="services-grid">
             <div className="service-card">
-              <img src="/images/kitchen288.webp" alt="Úklid domácností" />
+              <Image 
+                src="/images/kitchen288.webp" 
+                alt="Úklid domácností"
+                width={288}
+                height={288}
+                style={{ width: '100%', height: 'auto' }}
+              />
               <h3>Úklid domácností</h3>
               <p>Běžný, generální, expresní i úklid po rekonstrukci.</p>
               <Link href="/uklid-domacnosti">Více →</Link>
             </div>
             <div className="service-card">
-              <img src="/images/office288.webp" alt="Úklid kanceláří" />
+              <Image 
+                src="/images/office288.webp" 
+                alt="Úklid kanceláří"
+                width={288}
+                height={288}
+                style={{ width: '100%', height: 'auto' }}
+              />
               <h3>Úklid firemních prostor</h3>
               <p>Pravidelný úklid kanceláří, obchodů a dalších firemních prostor.</p>
               <Link href="/uklid-firem">Více →</Link>
             </div>
             <div className="service-card">
-              <img src="/images/hotel288.webp" alt="Airbnb a hotely" />
+              <Image 
+                src="/images/hotel288.webp" 
+                alt="Airbnb a hotely"
+                width={288}
+                height={288}
+                style={{ width: '100%', height: 'auto' }}
+              />
               <h3>Airbnb & hotely</h3>
               <p>Úklid, výměna prádla a kompletní správa vašich nemovitostí.</p>
               <Link href="/airbnb">Více →</Link>

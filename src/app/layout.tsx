@@ -11,6 +11,9 @@ import ChatWidget from '@/components/Chatbot/ChatWidget'
 export const metadata: Metadata = {
   title: 'CleanStay - Profesionální úklid',
   description: 'Profesionální úklid domácností, kanceláří a Airbnb v Praze. Férové ceny, spolehlivost a rychlost.',
+  icons: {
+    icon: '/logocleanstay.webp',
+  },
 }
 
 export default function RootLayout({
