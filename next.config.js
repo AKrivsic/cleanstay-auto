@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  compress: true,
+  swcMinify: true,
   images: {
     domains: ['localhost'],
     remotePatterns: [
@@ -8,12 +10,13 @@ const nextConfig = {
         hostname: '**',
       },
     ],
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60,
   },
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
   transpilePackages: ['openai'],
-  serverComponentsExternalPackages: ['openai'],
   async rewrites() {
     return [
       // Pretty URLs for static marketing pages (remaining)

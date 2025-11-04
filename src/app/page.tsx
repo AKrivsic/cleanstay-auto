@@ -2,7 +2,11 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import Calculator from '@/components/Calculator';
+import dynamic from 'next/dynamic';
+
+const Calculator = dynamic(() => import('@/components/Calculator'), {
+  ssr: false,
+});
 
 export const metadata: Metadata = {
   title: 'Úklid domácností, kanceláří a Airbnb | CleanStay Praha',
@@ -38,6 +42,8 @@ export default function HomePage() {
                 src="/images/kitchen288.webp" 
                 alt="Úklid domácností"
                 loading="lazy"
+                width={288}
+                height={288}
               />
               <h3>Úklid domácností</h3>
               <p>Běžný, generální, expresní i úklid po rekonstrukci.</p>
@@ -48,6 +54,8 @@ export default function HomePage() {
                 src="/images/office288.webp" 
                 alt="Úklid kanceláří"
                 loading="lazy"
+                width={288}
+                height={288}
               />
               <h3>Úklid firemních prostor</h3>
               <p>Pravidelný úklid kanceláří, obchodů a dalších firemních prostor.</p>
@@ -58,6 +66,8 @@ export default function HomePage() {
                 src="/images/hotel288.webp" 
                 alt="Airbnb a hotely"
                 loading="lazy"
+                width={288}
+                height={288}
               />
               <h3>Airbnb & hotely</h3>
               <p>Úklid, výměna prádla a kompletní správa vašich nemovitostí.</p>

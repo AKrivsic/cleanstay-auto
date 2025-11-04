@@ -16,7 +16,7 @@ export default function Header() {
       <div className="header-inner container">
         <div className="logo">
           <Link href="/">
-            <img src="/logocleanstay.webp" alt="CleanStay Logo" />
+            <Image src="/logocleanstay.webp" alt="CleanStay Logo" width={150} height={40} priority />
           </Link>
         </div>
         <div className="header-nav">
