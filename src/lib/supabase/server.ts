@@ -7,13 +7,29 @@ export const createSupabaseServerClient = () => {
   
   if (!config || !config.serviceRoleKey) {
     // Return a mock client when CleanStay is disabled or service role key is missing
+    const chainableResponse = (data: any = null) => ({
+      select: (_cols?: string) => chainableResponse(data),
+      eq: (_col?: string, _val?: any) => chainableResponse(data),
+      neq: (_col?: string, _val?: any) => chainableResponse(data),
+      gt: (_col?: string, _val?: any) => chainableResponse(data),
+      gte: (_col?: string, _val?: any) => chainableResponse(data),
+      lt: (_col?: string, _val?: any) => chainableResponse(data),
+      lte: (_col?: string, _val?: any) => chainableResponse(data),
+      like: (_col?: string, _pattern?: string) => chainableResponse(data),
+      ilike: (_col?: string, _pattern?: string) => chainableResponse(data),
+      is: (_col?: string, _val?: any) => chainableResponse(data),
+      in: (_col?: string, _val?: any[]) => chainableResponse(data),
+      contains: (_col?: string, _val?: any) => chainableResponse(data),
+      order: (_col?: string, _opts?: any) => chainableResponse(data),
+      limit: (_n?: number) => chainableResponse(data),
+      range: (_from?: number, _to?: number) => chainableResponse(data),
+      single: () => Promise.resolve({ data: null, error: { code: 'PGRST116', message: 'No rows found' } }),
+      then: (onfulfilled?: any) => Promise.resolve({ data, error: null }).then(onfulfilled),
+    });
+    
     return {
-      from: () => ({
-        select: () => Promise.resolve({ data: [], error: null }),
-        insert: () => Promise.resolve({ data: [], error: null }),
-        update: () => Promise.resolve({ data: [], error: null }),
-        delete: () => Promise.resolve({ data: [], error: null }),
-      }),
+      from: (_table: string) => chainableResponse(),
+      rpc: (_fn: string, _params?: any) => Promise.resolve({ data: null, error: null }),
       auth: {
         admin: {
           getUserById: () => Promise.resolve({ data: { user: null }, error: null }),
@@ -21,6 +37,15 @@ export const createSupabaseServerClient = () => {
           updateUserById: () => Promise.resolve({ data: { user: null }, error: null }),
           deleteUser: () => Promise.resolve({ data: {}, error: null }),
         },
+      },
+      storage: {
+        from: () => ({
+          upload: () => Promise.resolve({ data: null, error: null }),
+          download: () => Promise.resolve({ data: null, error: null }),
+          list: () => Promise.resolve({ data: [], error: null }),
+          remove: () => Promise.resolve({ data: [], error: null }),
+        }),
+        listBuckets: () => Promise.resolve({ data: [], error: null }),
       },
     } as any;
   }
