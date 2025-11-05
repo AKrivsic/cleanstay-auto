@@ -1,0 +1,108 @@
+/* Chatbot Widget Styles */
+.chat-widget-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+}
+
+.chat-widget-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  border: none;
+  background: #34D399;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-widget-panel {
+  position: absolute;
+  right: 0;
+  bottom: 56px;
+  width: 360px;
+  height: 480px;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+  background: #fff;
+  overflow: hidden;
+}
+
+/* Lead Form Styles */
+.lead-form {
+  padding: 16px;
+}
+
+.lead-form .row {
+  margin-bottom: 12px;
+}
+
+.lead-form label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.lead-form input[type="text"],
+.lead-form input[type="email"],
+.lead-form input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.lead-form .row.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lead-form .row.checkbox label {
+  margin: 0;
+  font-weight: normal;
+}
+
+.lead-form .actions {
+  margin-top: 16px;
+}
+
+.lead-form button {
+  width: 100%;
+  padding: 10px;
+  background: #8B5CF6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.lead-form button:hover {
+  background: #7C3AED;
+}
+
+.lead-success {
+  padding: 16px;
+  background: #D1FAE5;
+  color: #065F46;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.lead-error {
+  padding: 12px;
+  background: #FEE2E2;
+  color: #991B1B;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
