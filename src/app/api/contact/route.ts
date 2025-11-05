@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseClient } from '@/lib/supabase/client';
+import { getSupabaseConfig } from '@/lib/env';
 
 export const runtime = 'nodejs';
 
@@ -40,41 +41,49 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createSupabaseClient();
-
-    // Save to leads table
-    const { data, error } = await supabase
-      .from('leads')
-      .insert({
-        name,
-        email,
-        phone: null,
-        service_type: 'kontakt',
-        message,
-        consent: true, // From contact form
-        created_at: new Date().toISOString()
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error saving contact:', error);
-      return NextResponse.json(
-        { error: 'Nepodařilo se odeslat zprávu. Zkuste to prosím znovu.' },
-        { status: 500 }
-      );
-    }
-
-    // Log success
-    console.log('Contact form submitted:', {
-      leadId: data.id,
+    // Log the contact form submission (always)
+    console.log('📧 Contact form submission:', {
+      timestamp: new Date().toISOString(),
       name,
-      email: email.substring(0, 3) + '***'
+      email,
+      message: message.substring(0, 50) + (message.length > 50 ? '...' : '')
     });
 
+    // Try to save to Supabase if configured
+    const supabaseConfig = getSupabaseConfig();
+    if (supabaseConfig) {
+      try {
+        const supabase = createSupabaseClient();
+        const { data, error } = await supabase
+          .from('leads')
+          .insert({
+            name,
+            email,
+            phone: null,
+            service_type: 'kontakt',
+            message,
+            consent: true,
+            created_at: new Date().toISOString()
+          })
+          .select()
+          .single();
+
+        if (error) {
+          console.error('⚠️ Supabase error (contact will be logged only):', error);
+        } else {
+          console.log('✅ Contact saved to database:', { leadId: data.id });
+        }
+      } catch (dbError) {
+        console.error('⚠️ Database error (contact will be logged only):', dbError);
+      }
+    } else {
+      console.warn('⚠️ Supabase not configured. Contact logged to console only.');
+      console.log('💾 CONTACT FORM DATA:', JSON.stringify({ name, email, message }, null, 2));
+    }
+
+    // Always return success to user (data is logged)
     // Return success - for HTML form, redirect
     if (contentType?.includes('application/x-www-form-urlencoded')) {
-      // HTML form submission - redirect back with success message
       return NextResponse.redirect(new URL('/?message=success', request.url));
     }
 
@@ -85,7 +94,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error in contact POST:', error);
+    console.error('❌ Error in contact POST:', error);
     return NextResponse.json(
       { error: 'Došlo k neočekávané chybě. Zkuste to prosím znovu.' },
       { status: 500 }
