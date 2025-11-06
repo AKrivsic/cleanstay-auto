@@ -41,12 +41,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Log the contact form submission (always)
-    console.log('📧 Contact form submission:', {
+    // Log the contact form submission (always) - including full message
+    console.log('📧 CONTACT FORM SUBMISSION:', {
       timestamp: new Date().toISOString(),
       name,
       email,
-      message: message.substring(0, 50) + (message.length > 50 ? '...' : '')
+      message // Full message in logs
     });
 
     // Try to save to Supabase if configured
@@ -54,6 +54,9 @@ export async function POST(request: NextRequest) {
     if (supabaseConfig) {
       try {
         const supabase = createSupabaseClient();
+        
+        // Note: leads table doesn't have 'message' column
+        // We save basic contact info and log the full message above
         const { data, error } = await supabase
           .from('leads')
           .insert({
@@ -61,7 +64,6 @@ export async function POST(request: NextRequest) {
             email,
             phone: null,
             service_type: 'kontakt',
-            message,
             consent: true,
             created_at: new Date().toISOString()
           })
@@ -71,14 +73,16 @@ export async function POST(request: NextRequest) {
         if (error) {
           console.error('⚠️ Supabase error (contact will be logged only):', error);
         } else {
-          console.log('✅ Contact saved to database:', { leadId: data.id });
+          console.log('✅ Contact saved to database:', { 
+            leadId: data.id,
+            note: 'Full message is in logs above'
+          });
         }
       } catch (dbError) {
         console.error('⚠️ Database error (contact will be logged only):', dbError);
       }
     } else {
       console.warn('⚠️ Supabase not configured. Contact logged to console only.');
-      console.log('💾 CONTACT FORM DATA:', JSON.stringify({ name, email, message }, null, 2));
     }
 
     // Always return success to user (data is logged)
