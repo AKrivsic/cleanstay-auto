@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     if (resend) {
       try {
         const emailResult = await resend.emails.send({
-          from: 'CleanStay Kontakt <onboarding@resend.dev>', // Change this to your verified domain
+          from: 'CleanStay <kontakt@cleanstay.cz>',
           to: ['info@cleanstay.cz'],
           subject: `Nová zpráva z kontaktního formuláře od ${name}`,
           html: `

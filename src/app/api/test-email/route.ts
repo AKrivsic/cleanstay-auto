@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     
     // Send test email
     const result = await resend.emails.send({
-      from: 'CleanStay Test <onboarding@resend.dev>',
+      from: 'CleanStay Test <kontakt@cleanstay.cz>',
       to: ['info@cleanstay.cz'],
       subject: '🧪 Test email z CleanStay',
       html: `
