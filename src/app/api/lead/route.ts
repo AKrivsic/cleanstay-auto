@@ -69,13 +69,21 @@ export async function POST(req: NextRequest) {
     // Get conversation messages for email
     let conversationMessages: any[] = [];
     if (conversationId) {
-      const { data: messages } = await supabase
+      const { data: messages, error: msgError } = await supabase
         .from('messages')
-        .select('role, content, created_at')
+        .select('role, text, created_at')
         .eq('conversation_id', conversationId)
         .order('created_at', { ascending: true });
       
+      if (msgError) {
+        console.error('⚠️ Failed to load conversation messages:', msgError);
+      }
+      
       conversationMessages = messages || [];
+      console.log('📝 Loaded conversation messages:', {
+        conversationId,
+        messageCount: conversationMessages.length
+      });
     }
 
     // Send email notification with conversation
@@ -91,7 +99,7 @@ export async function POST(req: NextRequest) {
                   <div style="font-size: 11px; color: #6B7280; margin-bottom: 4px;">
                     <strong>${isUser ? '👤 Zákazník' : '🤖 Asistent'}</strong> • ${time}
                   </div>
-                  <div style="font-size: 14px; color: #1F2937; white-space: pre-wrap;">${msg.content}</div>
+                  <div style="font-size: 14px; color: #1F2937; white-space: pre-wrap;">${msg.text}</div>
                 </div>
               `;
             }).join('')
@@ -166,7 +174,7 @@ PRŮBĚH KONVERZACE:
 ${conversationMessages.map(msg => {
   const time = new Date(msg.created_at).toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' });
   const sender = msg.role === 'user' ? 'Zákazník' : 'Asistent';
-  return `[${time}] ${sender}:\n${msg.content}\n`;
+  return `[${time}] ${sender}:\n${msg.text}\n`;
 }).join('\n')}
 ` : ''}
 
