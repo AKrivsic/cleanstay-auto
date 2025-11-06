@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseClient } from '@/lib/supabase/client';
 import { getSupabaseConfig } from '@/lib/env';
+import { Resend } from 'resend';
 
 export const runtime = 'nodejs';
+
+// Initialize Resend
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 // POST /api/contact
 export async function POST(request: NextRequest) {
@@ -48,6 +52,61 @@ export async function POST(request: NextRequest) {
       email,
       message // Full message in logs
     });
+
+    // Send email via Resend if configured
+    if (resend) {
+      try {
+        const emailResult = await resend.emails.send({
+          from: 'CleanStay Kontakt <onboarding@resend.dev>', // Change this to your verified domain
+          to: ['info@cleanstay.cz'],
+          subject: `Nová zpráva z kontaktního formuláře od ${name}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #2563eb;">📧 Nová zpráva z kontaktního formuláře</h2>
+              
+              <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 10px 0;"><strong>Jméno:</strong> ${name}</p>
+                <p style="margin: 10px 0;"><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+                <p style="margin: 10px 0;"><strong>Čas:</strong> ${new Date().toLocaleString('cs-CZ')}</p>
+              </div>
+              
+              <div style="margin: 20px 0;">
+                <h3 style="color: #374151;">Zpráva:</h3>
+                <p style="background-color: #ffffff; padding: 15px; border-left: 4px solid #2563eb; white-space: pre-wrap;">${message}</p>
+              </div>
+              
+              <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+              
+              <p style="color: #6b7280; font-size: 14px;">
+                Tato zpráva byla odeslána z kontaktního formuláře na cleanstay.cz
+              </p>
+            </div>
+          `,
+          text: `
+Nová zpráva z kontaktního formuláře CleanStay
+
+Jméno: ${name}
+Email: ${email}
+Čas: ${new Date().toLocaleString('cs-CZ')}
+
+Zpráva:
+${message}
+
+---
+Tato zpráva byla odeslána z kontaktního formuláře na cleanstay.cz
+          `
+        });
+
+        console.log('✅ Email sent via Resend:', { 
+          messageId: emailResult.data?.id,
+          to: 'info@cleanstay.cz'
+        });
+      } catch (emailError) {
+        console.error('⚠️ Email sending failed (will continue):', emailError);
+      }
+    } else {
+      console.warn('⚠️ Resend not configured. Email not sent. Add RESEND_API_KEY to env.');
+    }
 
     // Try to save to Supabase if configured
     const supabaseConfig = getSupabaseConfig();
