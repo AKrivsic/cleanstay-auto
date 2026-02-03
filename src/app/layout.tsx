@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import './globals.css'
 import '@/styles/chatbot.css'
 import '@/css/base.css'
@@ -46,6 +47,11 @@ export default function RootLayout({
         </noscript>
         {children}
         <ChatWidget />
+        {/* Fenrik Chat Widget */}
+        <Script
+          src="https://widget.fenrik.chat/embed.js?id=7ba6b8f5-b7ae-415e-aef1-4c08b6e1b611"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   )
