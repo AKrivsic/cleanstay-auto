@@ -48,10 +48,7 @@ export default function RootLayout({
         {children}
         <ChatWidget />
         {/* Fenrik Chat Widget */}
-        <Script
-          src="https://widget.fenrik.chat/embed.js?id=7ba6b8f5-b7ae-415e-aef1-4c08b6e1b611"
-          strategy="afterInteractive"
-        />
+        <script async src="https://widget.fenrik.chat/embed.js?id=6a827b10-6d1f-4d9b-8f15-476ef8f2431c"></script>
       </body>
     </html>
   )
